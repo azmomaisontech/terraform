@@ -1,4 +1,4 @@
 steps:
   - label: ":rocket: Deploy"
     command: "scripts/deploy.sh"
-    if: build.pull_request.id != null && build.pull_request.labels includes \"PR Validator\"
+    if: build.pull_request.labels includes "deploy"
