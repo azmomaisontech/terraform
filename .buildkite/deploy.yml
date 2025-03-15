@@ -1,0 +1,4 @@
+steps:
+  - label: ":rocket: Deploy"
+    command: "scripts/deploy.sh"
+    if: build.pull_request.id != null && build.message == "deploy"
