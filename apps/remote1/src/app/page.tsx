@@ -4,7 +4,7 @@ export function Page({ title }: { title: string }) {
     <>
       <h1>
         <span> Hello there, </span>
-        Welcome {title} 👋
+        Welcome to {title} 👋
       </h1>
     </>
   );
