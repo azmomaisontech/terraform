@@ -34,7 +34,7 @@ variable "public_access_block" {
 variable "aliases" {
   description = "List of aliases for the CloudFront distribution"
   type        = list(string)
-  default     = ["*"]
+  default     = []
 }
 
 variable "viewer_certificate" {
@@ -49,22 +49,5 @@ variable "viewer_certificate" {
   default = {
     cloudfront_default_certificate = true
   }
-}
-
-variable "cloudfront_scope" {
-  description = "The scope of the cloudfront distribution"
-  type        = string
-  default     = "CLOUDFRONT"
-}
-
-variable "waf_name" {
-  description = "name of WAF"
-  default     = "console_waf"
-}
-
-variable "allowed_ip_ranges" {
-  description = "list of allowed ip ranges"
-  type        = list(string)
-  default     = []
 }
 
