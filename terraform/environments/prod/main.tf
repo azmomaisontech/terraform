@@ -1,5 +1,5 @@
 module "s3_bucket" {
-  source = "../../modules/aws/s3"
+  source       = "../../modules/aws/s3"
   environment  = "prod"
   product_name = "test-one"
 
