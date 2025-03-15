@@ -1,4 +1,9 @@
 steps:
-  - label: ":rocket: Deploy"
+  - label: ":rocket: Deploy bootstrap"
     command: "scripts/deploy.sh"
-    if: build.pull_request.labels includes "deploy"
+    if: build.pull_request.labels includes "deploy"  &&  build.pull_request.changed_files.any? { |file| file.starts_with?("bootstrap/") }
+  - label: ':building_construction: Build code'
+    id: "build"
+    command: |
+      pnpm install --frozen-lockfile
+      npx nx affected run-many -t build -p core layout remote1 remote2
