@@ -8,12 +8,6 @@ variable "product_name" {
     type        = string
 }
 
-variable "vpn_protected" {
-  description = "enable vpn protection"
-  type        = bool
-  default     = false
-}
-
 variable "versioning" {
   description = "enable s3 versioning"
   default     = true

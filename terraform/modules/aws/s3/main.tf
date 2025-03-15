@@ -45,12 +45,13 @@ resource "aws_s3_bucket_policy" "this" {
 data "aws_iam_policy_document" "this" {
   statement {
     actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.this.arn}/", "${aws_s3_bucket.this.arn}/*"]
+    resources = ["${aws_s3_bucket.this.arn}/*"]
 
     principals {
       type        = "AWS"
       identifiers = flatten([
-        aws_cloudfront_origin_access_identity.this.iam_arn
+        aws_cloudfront_origin_access_identity.this.iam_arn,
+        aws_cloudfront_origin_access_identity.oai.iam_arn
       ])
     }
   }
@@ -63,10 +64,14 @@ resource "aws_cloudfront_origin_access_identity" "this" {
   comment = "Origin Access Identity for ${var.product_name} MFE files"
 }
 
+resource "aws_cloudfront_origin_access_identity" "oai" {
+  comment = "Origin access identity for ${var.product_name} origin"
+}
+
 resource "aws_cloudfront_distribution" "this" {
   enabled = true
   aliases = var.aliases
-  web_acl_id = var.vpn_protected ? aws_wafv2_web_acl.this[0].arn : null
+  web_acl_id = null
 
   origin {
     domain_name              = aws_s3_bucket.this.bucket_regional_domain_name
@@ -151,63 +156,5 @@ resource "aws_cloudfront_response_headers_policy" "security_headers_policy" {
       preload = true
       override = true
     }
-  }
-}
-
-#######################################
-# Wafv2 Web ACL
-#######################################
-resource "aws_wafv2_web_acl" "this" {
-  name  = local.wafv2_web_acl_name
-  count = (var.vpn_protected || var.environment == "prod") ? 1 : 0
-  description = "Only allowing access to VPN connected users"
-  scope       = var.cloudfront_scope
-
-  default_action {
-    block {}
-  }
-
-  visibility_config {
-    cloudwatch_metrics_enabled = false
-    metric_name                = var.environment == "" ? "${var.waf_name}-block" : "${var.waf_name}-${var.environment}-block"
-    sampled_requests_enabled   = false
-  }
-
-  rule {
-    name     = "vpn_rule_${var.environment}"
-    priority = 1
-
-    action {
-      allow {}
-    }
-
-    statement {
-      ip_set_reference_statement {
-        arn = aws_wafv2_ip_set.vpn_ip[0].arn
-      }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = false
-      metric_name                = "${var.waf_name}-allow"
-      sampled_requests_enabled   = false
-    }
-  }
-}
-
-
-#######################################
-# Wafv2 IP Set
-#######################################
-resource "aws_wafv2_ip_set" "vpn_ip" {
-  count = (var.vpn_protected || var.environment == "prod") ? 1 : 0
-  name               = "ipset"
-  description        = "IP range for VPNs"
-  ip_address_version = "IPV4"
-  scope              = var.cloudfront_scope
-  addresses          = var.allowed_ip_ranges
-
-  tags = {
-    "environment" = var.environment
   }
 }
