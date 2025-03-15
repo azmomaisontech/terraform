@@ -16,6 +16,6 @@ echo "Uploading files to S3 $apps"
 for app in apps/*; do
   if [ -d "$app/dist" ]; then
     app_name=$(basename "$app")
-    aws s3 cp "$app/dist" "$S3_BUCKET/$app_name/$VERSION/"
+    aws s3 sync "$app/dist" "s3://$S3_BUCKET/$app_name/$VERSION/"
   fi
 done
