@@ -1,0 +1,6 @@
+{
+    "coreRemoteEntry": "http://localhost:4201/main.js",
+    "layoutManifest": "http://localhost:4202/mf-manifest.json",
+    "viewHomeManifest": "http://localhost:4203/mf-manifest.json",
+    "viewPhoneNumbersManifest": "http://localhost:4204/mf-manifest.json"
+}
