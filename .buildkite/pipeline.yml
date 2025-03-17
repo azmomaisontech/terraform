@@ -1,0 +1,11 @@
+steps:
+  - label: ":rocket: Deploy bootstrap"
+    command: "scripts/deploy.sh"
+  - label: ':building_construction: Build code'
+    id: "build"
+    command: |
+      pnpm install --frozen-lockfile
+      npx nx affected run-many -t build -p core layout remote1 remote2
+  - label: ":cloud: Upload to S3"
+    depends_on: "build"
+    command: "scripts/upload_to_s3.sh 1.0.0"
